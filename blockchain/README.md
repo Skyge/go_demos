@@ -11,6 +11,11 @@ Gorilla/mux 是一个很流行的处理http请求的包
     go get github.com/joho/godotenv
 Godotenv 可以让我们读取 .env 文件里面的环境变量。所以我们在根目录创建一个 .env 文件，写入下面内容:PORT=8080
 
-    go run main.go
-运行程序
+在第一个终端，运行程序
 
+    go run main.go
+
+新开第二个终端，运行：
+
+    nc localhost 9000
+输入欲传递的数，第一个终端便显示第二个交易，一段时间（30s）此交易会广播到其他终端中。

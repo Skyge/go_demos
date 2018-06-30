@@ -6,14 +6,14 @@ import (
 	"encoding/json"
 	"io"
 	"log"
-	"net/http"
+	"net"
 	"os"
 	"time"
-	"sync"
+	"strconv"
 
 	"github.com/davecgh/go-spew/spew"  // Spew 可以格式化 structs 和 slices，以便我们在console能清晰明了的看这些数据
-	"github.com/gorilla/mux"           // 处理http请求的包
 	"github.com/joho/godotenv"         // 可以让我们读取 .env 文件里面的环境变量
+	"bufio"
 )
 
 type Block struct {
@@ -24,13 +24,7 @@ type Block struct {
 	Hash      string   // 当前区块 SHA256 的哈希值
 }
 var Blockchain []Block
-
-// 方便接收POST请求体
-type Message struct {
-	Data int
-}
-
-var mutex = &sync.Mutex{}
+var bcServer chan []Block
 
 // 主函数入口
 func main() {
@@ -39,96 +33,71 @@ func main() {
 		log.Fatal(err)
 	}
 
+	bcServer = make(chan []Block)
+
+	t := time.Now()
+	genesisBlock := Block{0, t.String(), 0, "", ""}
+	spew.Dump(genesisBlock)
+	Blockchain = append(Blockchain, genesisBlock)
+
+	// 启动TCP
+	server, err := net.Listen("tcp", ":"+os.Getenv("ADDR"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer server.Close()
+
+	for {
+		conn, err := server.Accept()
+		if err != nil {
+			log.Fatal(err)
+		}
+		go handleConn(conn)
+	}
+}
+
+func handleConn(conn net.Conn) {
+	defer conn.Close()
+	io.WriteString(conn, "Enter a new Data:")
+	scanner := bufio.NewScanner(conn)
+
 	go func() {
-		t := time.Now()
-		genesisBlock := Block{}
-		genesisBlock = Block{0, t.String(), 0, calculateHash(genesisBlock), ""}
-		spew.Dump(genesisBlock)
+		for scanner.Scan() {
+			data, err := strconv.Atoi(scanner.Text())
+			if err != nil {
+				log.Printf("%v not a number: %v", scanner.Text(), err)
+				continue
+			}
+			newBlock, err := generateBlock(Blockchain[len(Blockchain)-1], data)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+			if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
+				newBlockchain := append(Blockchain, newBlock)
+				replaceChain(newBlockchain)
+			}
 
-		mutex.Lock()
-		Blockchain = append(Blockchain, genesisBlock)
-		mutex.Unlock()
+			bcServer <- Blockchain
+			io.WriteString(conn, "\nEnter a new Data:")
+		}
 	}()
-	log.Fatal(run())
-}
 
-// 运行web server
-func run() error {
-	mux := makeMuxRouter()
-	httpPort := os.Getenv("PORT")
-	log.Println("Listening on ", httpPort)
-	s := &http.Server{
-		Addr:           ":" + httpPort,
-		Handler:        mux,
-		ReadTimeout:    10 * time.Second,
-		WriteTimeout:   10 * time.Second,
-		MaxHeaderBytes: 1 << 20,
-	}
+	// 模拟接收广播
+	go func() {
+		for {
+			time.Sleep(30 * time.Second)
+			output, err := json.Marshal(Blockchain)
+			if err != nil {
+				log.Fatal(err)
+			}
+			io.WriteString(conn, string(output))
+		}
+	}()
 
-	if err := s.ListenAndServe(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// HTTP请求处理方式
-func makeMuxRouter() http.Handler {
-	muxRouter := mux.NewRouter()
-	muxRouter.HandleFunc("/", handleGetBlockchain).Methods("GET")
-	muxRouter.HandleFunc("/", handleWriteBlock).Methods("POST")
-	return muxRouter
-}
-
-// GET处理方法
-func handleGetBlockchain(w http.ResponseWriter, r *http.Request) {
-	bytes, err := json.MarshalIndent(Blockchain, "", "  ")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	io.WriteString(w, string(bytes))
-}
-
-// POST处理方法
-func handleWriteBlock(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
-	var m Message
-
-	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&m); err != nil {
-		respondWithJSON(w, r, http.StatusBadRequest, r.Body)
-		return
-	}
-	defer r.Body.Close()
-
-	mutex.Lock()
-	newBlock, err := generateBlock(Blockchain[len(Blockchain)-1], m.Data)
-	mutex.Unlock()
-	if err != nil {
-		respondWithJSON(w, r, http.StatusInternalServerError, m)
-		return
-	}
-
-	if isBlockValid(newBlock, Blockchain[len(Blockchain)-1]) {
-		newBlockchain := append(Blockchain, newBlock)
-		replaceChain(newBlockchain)
+	for _ = range bcServer {
 		spew.Dump(Blockchain)
 	}
-
-	respondWithJSON(w, r, http.StatusCreated, newBlock)
-}
-
-// 处理POST请求可能的报错
-func respondWithJSON(w http.ResponseWriter, r *http.Request, code int, payload interface{}) {
-	response, err := json.MarshalIndent(payload, "", "  ")
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("HTTP 500: Internal Server Error"))
-		return
-	}
-	w.WriteHeader(code)
-	w.Write(response)
 }
 
 // 维持最长的链为合法链
