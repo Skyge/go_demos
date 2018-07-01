@@ -1,4 +1,4 @@
-package main
+﻿package main
 
 import (
 	"crypto/sha256"
@@ -10,21 +10,29 @@ import (
 	"os"
 	"time"
 	"strconv"
+	"sync"
 
 	"github.com/davecgh/go-spew/spew"  // Spew 可以格式化 structs 和 slices，以便我们在console能清晰明了的看这些数据
 	"github.com/joho/godotenv"         // 可以让我们读取 .env 文件里面的环境变量
 	"bufio"
+	"fmt"
+	"strings"
 )
 
+const difficulty = 4
 type Block struct {
-	Index     int      // 区块在区块链里的位置，即索引
-	Timestamp string   // 产生区块的时间戳
+	Index      int     // 区块在区块链里的位置，即索引
+	Timestamp  string  // 产生区块的时间戳
 	Data       int     // 待写入的数据
-	PrevHash  string   // 前一个区块 SHA256 的哈希值
-	Hash      string   // 当前区块 SHA256 的哈希值
+	PrevHash   string  // 前一个区块 SHA256 的哈希值
+	Hash       string  // 当前区块 SHA256 的哈希值
+	Difficulty int     // 产生区块的难度
+	Nonce      string  // 工作量证明数据
 }
 var Blockchain []Block
 var bcServer chan []Block
+
+var mutex = &sync.Mutex{}
 
 // 主函数入口
 func main() {
@@ -35,10 +43,16 @@ func main() {
 
 	bcServer = make(chan []Block)
 
-	t := time.Now()
-	genesisBlock := Block{0, t.String(), 0, "", ""}
-	spew.Dump(genesisBlock)
-	Blockchain = append(Blockchain, genesisBlock)
+	go func() {
+		t := time.Now()
+		genesisBlock := Block{}
+		genesisBlock = Block{0, t.String(), 0, "", calculateHash(genesisBlock), difficulty, ""}
+		spew.Dump(genesisBlock)
+
+		mutex.Lock()
+		Blockchain = append(Blockchain, genesisBlock)
+		mutex.Unlock()
+	}()
 
 	// 启动TCP
 	server, err := net.Listen("tcp", ":"+os.Getenv("ADDR"))
@@ -68,7 +82,11 @@ func handleConn(conn net.Conn) {
 				log.Printf("%v not a number: %v", scanner.Text(), err)
 				continue
 			}
-			newBlock, err := generateBlock(Blockchain[len(Blockchain)-1], data)
+
+			mutex.Lock()
+			newBlock := generateBlock(Blockchain[len(Blockchain)-1], data)
+			mutex.Unlock()
+
 			if err != nil {
 				log.Println(err)
 				continue
@@ -126,7 +144,7 @@ func isBlockValid(newBlock, oldBlock Block) bool {
 
 // 计算区块数据的哈希值
 func calculateHash(block Block) string {
-	record := string(block.Index) + block.Timestamp + string(block.Data) + block.PrevHash
+	record := strconv.Itoa(block.Index) + block.Timestamp + strconv.Itoa(block.Data) + block.PrevHash + block.Nonce
 	h := sha256.New()
 	h.Write([]byte(record))
 	hashed := h.Sum(nil)
@@ -135,7 +153,7 @@ func calculateHash(block Block) string {
 }
 
 // 生成新的区块
-func generateBlock(oldBlock Block, Data int) (Block, error) {
+func generateBlock(oldBlock Block, Data int) Block {
 	var newBlock Block
 	t := time.Now()
 
@@ -143,7 +161,25 @@ func generateBlock(oldBlock Block, Data int) (Block, error) {
 	newBlock.Timestamp = t.String()
 	newBlock.Data = Data
 	newBlock.PrevHash = oldBlock.Hash
-	newBlock.Hash = calculateHash(newBlock)
+	newBlock.Difficulty = difficulty
 
-	return newBlock, nil
+	for i := 0; ; i++ {
+		hex := fmt.Sprintf("%x", i)
+		newBlock.Nonce = hex
+		if !isHashValid(calculateHash(newBlock), newBlock.Difficulty) {
+			fmt.Println(calculateHash(newBlock), " do more work!")
+			time.Sleep(time.Second)
+			continue
+		} else {
+			fmt.Println(calculateHash(newBlock), " work done!")
+			newBlock.Hash = calculateHash(newBlock)
+			break
+		}
+	}
+	return newBlock
+}
+
+func isHashValid(hash string, difficulty int) bool {
+	prefix := strings.Repeat("0", difficulty)
+	return strings.HasPrefix(hash, prefix)
 }
