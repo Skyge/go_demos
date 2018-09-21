@@ -3,7 +3,7 @@ package main
 import "fmt"
 
 func main() {
-	nums := []int{-7,7,7,3,3,4,4}
+	nums := []int{-7, 7, 7, 3, 3, 4, 4}
 	output := singleNumber(nums)
 	fmt.Println(output)
 }
