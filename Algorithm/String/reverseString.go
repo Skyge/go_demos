@@ -1,4 +1,4 @@
-package main
+package String
 
 func main() {
 	s := "Hello World"
