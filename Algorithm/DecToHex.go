@@ -11,9 +11,10 @@ func DecHex(n int64) string {
 		return ""
 	}
 	if n == 0 {
-		return "0"
+		return "0x0"
 	}
 	hex := map[int64]int64{10: 65, 11: 66, 12: 67, 13: 68, 14: 69, 15: 70}
+	prefix := "0x"
 	s := ""
 	for q := n; q > 0; q = q / 16 {
 		m := q % 16
@@ -24,5 +25,6 @@ func DecHex(n int64) string {
 		}
 		s = fmt.Sprintf("%v%v", m, s)
 	}
+	s = prefix + s
 	return s
 }
