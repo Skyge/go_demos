@@ -13,52 +13,33 @@ Input: 1->2->2->1
 Output: true
  */
 func isPalindrome(head *ListNode) bool {
-	// base case
 	if head == nil || head.Next == nil {
 		return true
 	}
+	if head.Next.Next == nil {
+		return head.Val == head.Next.Val
+	}
 
-	// 1. find the half
-	var prev *ListNode = nil
-	var slow = head
-	var fast = head
+	fast := head
+	slow := head
+	tag := slow.Next
 
-	for fast != nil && fast.Next != nil {
-		prev = slow
+	for fast.Next != nil || fast.Next.Next != nil {
 		slow = slow.Next
 		fast = fast.Next.Next
 	}
-	// cut half
-	prev.Next = nil
 
-	// 2. set the second half and reverse the first half
-	if fast != nil {
+	if fast.Next == nil {
 		slow = slow.Next
 	}
-	var head2 *ListNode = slow
-	head = reverse(head)
-
-	// 3. compare two linked lists
-	for head != nil && head2 != nil {
-		if head.Val != head2.Val {
+	fast = tag
+	for slow != nil {
+		if slow.Val == fast.Val {
 			return false
+		}else {
+			slow = slow.Next
+			fast = fast.Next
 		}
-		head = head.Next
-		head2 = head2.Next
 	}
 	return true
-}
-
-func reverse(head *ListNode) *ListNode {
-	var prev *ListNode = nil
-	var curr = head
-
-	for curr != nil {
-		var post = curr.Next
-		curr.Next = prev
-		prev = curr
-		curr = post
-	}
-
-	return prev
 }
