@@ -34,7 +34,7 @@ func isPalindrome(head *ListNode) bool {
 	}
 	fast = tag
 	for slow != nil {
-		if slow.Val == fast.Val {
+		if slow.Val != fast.Val {
 			return false
 		}else {
 			slow = slow.Next
