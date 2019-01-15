@@ -25,13 +25,21 @@ Explanation: The input is: [5,1,4,null,null,3,6]. The root node's value
              is 5 but its right child's value is 4.
 */
 func isValidBST(root *TreeNode) bool {
-	int64_max := 9223372036854775807
-	int64_min := -9223372036854775808
+	platformType := 32 << (^uint(0) >> 63)
+	var intMin = 0
+	var intMax = 0
+	if platformType == 64 {
+		intMin = -9223372036854775808
+		intMax = 9223372036854775807
+	} else if platformType == 32 {
+		intMin = -2147483648
+		intMax = 2147483647
+	}
 
-	return helper(root, int64_max, int64_min)
+	return helper(root, intMin, intMax)
 }
 
-func helper(root *TreeNode, max, min int) bool {
+func helper(root *TreeNode, min, max int) bool {
 	if root == nil {
 		return true
 	}
