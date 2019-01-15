@@ -1,5 +1,7 @@
 package Trees
 
+import "math"
+
 /**
 Given a binary tree, determine if it is a valid binary search tree (BST).
 Assume a BST is defined as follows:
@@ -25,26 +27,17 @@ Explanation: The input is: [5,1,4,null,null,3,6]. The root node's value
              is 5 but its right child's value is 4.
 */
 func isValidBST(root *TreeNode) bool {
-	platformType := 32 << (^uint(0) >> 63)
-	var intMin = 0
-	var intMax = 0
-	if platformType == 64 {
-		intMin = -9223372036854775808
-		intMax = 9223372036854775807
-	} else if platformType == 32 {
-		intMin = -2147483648
-		intMax = 2147483647
-	}
-
-	return helper(root, intMin, intMax)
+	return helper(root, math.MinInt64, math.MaxInt64)
 }
 
 func helper(root *TreeNode, min, max int) bool {
 	if root == nil {
 		return true
 	}
-	if root.Val < min || root.Val > max {
-		return false
+	if root.Val > min && root.Val < max &&
+		helper(root.Left, min, root.Val) &&
+		helper(root.Right, root.Val, max) {
+			return true
 	}
-	return helper(root.Left, min, root.Val-1) && helper(root.Right, root.Val+1, max)
+	return false
 }
