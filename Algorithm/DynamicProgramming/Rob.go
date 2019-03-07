@@ -20,14 +20,14 @@ Example 2:
 	Output: 12
 	Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 5 (money = 1).
              Total amount you can rob = 2 + 9 + 1 = 12.
- */
+*/
 func rob(nums []int) int {
 	even, odd := 0, 0
 	for i, n := range nums {
 		if i%2 == 0 {
-			even = max(even + n, odd)
+			even = max(even+n, odd)
 		} else {
-			odd = max(odd + n, even)
+			odd = max(odd+n, even)
 		}
 	}
 	return max(even, odd)

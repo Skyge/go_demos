@@ -20,7 +20,7 @@ Example 2:
 		1. 1 step + 1 step + 1 step
 		2. 1 step + 2 steps
 		3. 2 steps + 1 step
- */
+*/
 func climbStairs(n int) int {
 	if n <= 2 {
 		return n

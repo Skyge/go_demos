@@ -9,14 +9,14 @@ Example:
 
 Note:
 	Given n will always be valid.
- */
+*/
 
 /**
 type ListNode struct {
 	Val int
 	Next *ListNode
 }
- */
+*/
 
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
 	dummy := ListNode{}
@@ -24,7 +24,7 @@ func removeNthFromEnd(head *ListNode, n int) *ListNode {
 	first := &dummy
 	second := &dummy
 
-	for i := 1; i < n +1; i++ {
+	for i := 1; i < n+1; i++ {
 		first = first.Next
 	}
 

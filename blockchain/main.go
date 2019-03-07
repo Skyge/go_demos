@@ -1,4 +1,4 @@
-﻿package main
+package main
 
 import (
 	"crypto/sha256"
@@ -8,27 +8,29 @@ import (
 	"log"
 	"net"
 	"os"
-	"time"
 	"strconv"
 	"sync"
+	"time"
 
-	"github.com/davecgh/go-spew/spew"  // Spew 可以格式化 structs 和 slices，以便我们在console能清晰明了的看这些数据
-	"github.com/joho/godotenv"         // 可以让我们读取 .env 文件里面的环境变量
 	"bufio"
 	"fmt"
+	"github.com/davecgh/go-spew/spew" // Spew 可以格式化 structs 和 slices，以便我们在console能清晰明了的看这些数据
+	"github.com/joho/godotenv"        // 可以让我们读取 .env 文件里面的环境变量
 	"strings"
 )
 
 const difficulty = 4
+
 type Block struct {
-	Index      int     // 区块在区块链里的位置，即索引
-	Timestamp  string  // 产生区块的时间戳
-	Data       int     // 待写入的数据
-	PrevHash   string  // 前一个区块 SHA256 的哈希值
-	Hash       string  // 当前区块 SHA256 的哈希值
-	Difficulty int     // 产生区块的难度
-	Nonce      string  // 工作量证明数据
+	Index      int    // 区块在区块链里的位置，即索引
+	Timestamp  string // 产生区块的时间戳
+	Data       int    // 待写入的数据
+	PrevHash   string // 前一个区块 SHA256 的哈希值
+	Hash       string // 当前区块 SHA256 的哈希值
+	Difficulty int    // 产生区块的难度
+	Nonce      string // 工作量证明数据
 }
+
 var Blockchain []Block
 var bcServer chan []Block
 

@@ -2,7 +2,7 @@ package String
 
 import "fmt"
 
-func main()  {
+func main() {
 	str := "abcddc"
 	firstUniqChar := firstUniqChar(str)
 	fmt.Println("The first non-repeating character is:", firstUniqChar)
@@ -31,7 +31,6 @@ func firstUniqChar(s string) int {
 	for _, v := range s {
 		arr[byte(v)-'a']++
 	}
-
 
 	for i, v := range s {
 		if arr[byte(v)-'a'] == 1 {

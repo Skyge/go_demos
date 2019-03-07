@@ -29,7 +29,7 @@ Example:
 		"14",
 		"FizzBuzz"
 	]
- */
+*/
 func fizzBuzz(n int) []string {
 	ret := []string{}
 	for i := 1; i <= n; i++ {

@@ -15,11 +15,11 @@ Example:
 		/  \
 	   15   7
 return its depth = 3.
- */
+*/
 
 type TreeNode struct {
-	Val int
-	Left *TreeNode
+	Val   int
+	Left  *TreeNode
 	Right *TreeNode
 }
 
@@ -28,9 +28,9 @@ func maxDepth(root *TreeNode) int {
 		leftDepth := maxDepth(root.Left)
 		rightDepth := maxDepth(root.Right)
 		if leftDepth > rightDepth {
-			return 1+leftDepth
+			return 1 + leftDepth
 		}
-		return 1+rightDepth
+		return 1 + rightDepth
 	}
 	return 0
 }

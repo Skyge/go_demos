@@ -18,17 +18,17 @@ Example 2:
 	Input: [7,6,4,3,1]
 	Output: 0
 	Explanation: In this case, no transaction is done, i.e. max profit = 0.
- */
+*/
 func maxProfit(prices []int) int {
 	max := 0
 	maxDiff := 0
 
-	for i := len(prices)-1 ; i >= 0; i-- {
+	for i := len(prices) - 1; i >= 0; i-- {
 		if prices[i] > max {
 			max = prices[i]
 		}
 		if max-prices[i] > maxDiff {
-			maxDiff = max-prices[i]
+			maxDiff = max - prices[i]
 		}
 	}
 

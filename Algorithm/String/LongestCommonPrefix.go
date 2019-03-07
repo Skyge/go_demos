@@ -2,7 +2,7 @@ package String
 
 import "fmt"
 
-func main()  {
+func main() {
 	input := []string{
 		"flower",
 		"flow",
@@ -27,11 +27,11 @@ Explanation: There is no common prefix among the input strings.
 
 Note:
 	All given inputs are in lowercase letters a-z.
- */
+*/
 func longestCommonPrefix(strs []string) (result string) {
 	shortest := -1
 	for _, s := range strs {
-		if len(s) < shortest || shortest == -1{
+		if len(s) < shortest || shortest == -1 {
 			shortest = len(s)
 		}
 	}

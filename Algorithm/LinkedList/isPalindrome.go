@@ -11,7 +11,7 @@ Example 2:
 
 Input: 1->2->2->1
 Output: true
- */
+*/
 func isPalindrome(head *ListNode) bool {
 	if head == nil { // linked list length == 1
 		return true
@@ -31,7 +31,7 @@ func isPalindrome(head *ListNode) bool {
 		return true
 	}
 	for slow != nil {
-		slow.Next, prev , slow = prev, slow, slow.Next
+		slow.Next, prev, slow = prev, slow, slow.Next
 	}
 
 	for head != nil && prev != nil {

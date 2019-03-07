@@ -12,7 +12,7 @@ Example:
 Follow up:
 	If you have figured out the O(n) solution, t
 	ry coding another solution using the divide and conquer approach, which is more subtle.
- */
+*/
 func maxSubArray(nums []int) int {
 	max := nums[0]
 	sum := max

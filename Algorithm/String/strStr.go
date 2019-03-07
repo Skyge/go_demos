@@ -2,7 +2,7 @@ package String
 
 import "fmt"
 
-func main()  {
+func main() {
 	var haystack = "aaaaa"
 	var needle = "bba"
 	fmt.Println(strStr(haystack, needle))
@@ -28,7 +28,7 @@ Clarification:
 
 For the purpose of this problem, we will return 0 when needle is an empty string.
 This is consistent to C's strstr() and Java's indexOf().
- */
+*/
 func strStr(haystack string, needle string) int {
 	haystackLen := len(haystack)
 	searchOffset := len(needle)

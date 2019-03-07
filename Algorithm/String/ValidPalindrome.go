@@ -2,7 +2,7 @@ package String
 
 import "strings"
 
-func main()  {
+func main() {
 	var s = "A man, a plan, a canal: Panama"
 	isPalindrome(s)
 }

@@ -37,7 +37,7 @@ func helper(root *TreeNode, min, max int) bool {
 	if root.Val > min && root.Val < max &&
 		helper(root.Left, min, root.Val) &&
 		helper(root.Right, root.Val, max) {
-			return true
+		return true
 	}
 	return false
 }

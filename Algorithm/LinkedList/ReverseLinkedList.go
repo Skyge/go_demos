@@ -9,19 +9,19 @@ Example:
 
 Follow up:
 	A linked list can be reversed either iteratively or recursively.
- */
+*/
 
 /**
 type ListNode struct {
 	Val int
 	Next *ListNode
 }
- */
+*/
 func reverseList(head *ListNode) *ListNode {
 	cur := head
 	var result, temp *ListNode
 	for cur != nil {
-		n := &ListNode{Val:cur.Val, Next:temp}
+		n := &ListNode{Val: cur.Val, Next: temp}
 		if cur.Next == nil {
 			result = n
 		}

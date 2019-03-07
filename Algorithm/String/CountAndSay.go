@@ -2,7 +2,7 @@ package String
 
 import "fmt"
 
-func main()  {
+func main() {
 	input := 5
 	fmt.Println(countAndSay(input))
 }
@@ -32,7 +32,7 @@ Example 1:
 Example 2:
 	Input: 4
 	Output: "1211"
- */
+*/
 func countAndSay(n int) string {
 	return gen("1", n-1)
 }
@@ -55,10 +55,10 @@ func gen(str string, n int) string {
 		}
 
 		n := last - index + 1
-		result = append(result, byte(n) + '0')
+		result = append(result, byte(n)+'0')
 		result = append(result, c)
 		index = last + 1
 	}
 
-	return gen(string(result), n - 1)
+	return gen(string(result), n-1)
 }

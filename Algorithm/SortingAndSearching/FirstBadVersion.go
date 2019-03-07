@@ -22,14 +22,14 @@ Example:
 	call isBadVersion(4) -> true
 
 	Then 4 is the first bad version.
- */
+*/
 
 // Forward declaration of isBadVersion API.
 func firstBadVersion(version int) int {
 	start := 1
 	end := version
 	for start < end {
-		mid := start + (end - start) / 2
+		mid := start + (end-start)/2
 		if isBadVersion(mid) {
 			end = mid
 		} else {

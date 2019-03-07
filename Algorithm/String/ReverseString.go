@@ -15,7 +15,7 @@ Example 1:
 Example 2:
 	Input: "A man, a plan, a canal: Panama"
 	Output: "amanaP :lanac a ,nalp a ,nam A"
- */
+*/
 
 func reverseString(s string) string {
 	a := []rune(s)

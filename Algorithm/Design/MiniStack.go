@@ -16,46 +16,41 @@ Example:
 	minStack.pop();
 	minStack.top();      --> Returns 0.
 	minStack.getMin();   --> Returns -2.
- */
+*/
 type MinStack struct {
 	stack []int
-	min *node
+	min   *node
 }
 
 type node struct {
 	prevMin *node
-	idx int
+	idx     int
 }
-
 
 /** initialize your data structure here. */
 func Constructor() MinStack {
 	return MinStack{}
 }
 
-
-func (m *MinStack) Push(x int)  {
+func (m *MinStack) Push(x int) {
 	m.stack = append(m.stack, x)
 	if m.min == nil || m.stack[m.min.idx] > x {
-		n := &node{prevMin:m.min, idx:len(m.stack)-1}
+		n := &node{prevMin: m.min, idx: len(m.stack) - 1}
 		m.min = n
 	}
 }
 
-
-func (m *MinStack) Pop()  {
-	idx := len(m.stack)-1
+func (m *MinStack) Pop() {
+	idx := len(m.stack) - 1
 	if m.min != nil && m.min.idx == idx {
 		m.min = m.min.prevMin
 	}
 	m.stack = m.stack[:idx]
 }
 
-
 func (m *MinStack) Top() int {
 	return m.stack[len(m.stack)-1]
 }
-
 
 func (m *MinStack) GetMin() int {
 	return m.stack[m.min.idx]

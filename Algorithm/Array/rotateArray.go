@@ -12,7 +12,7 @@ func main() {
 }
 
 /**
-* Given an array, rotate the array to the right by k steps, where k is non-negative.
+ * Given an array, rotate the array to the right by k steps, where k is non-negative.
  */
 func rotate(nums []int, k int) []int {
 	k = k % len(nums)
@@ -24,7 +24,7 @@ func rotate(nums []int, k int) []int {
 
 // method2
 func rotate2(nums []int, k int) {
-	// 假定 k >= 0
+	// assume k >= 0
 
 	n := len(nums)
 
