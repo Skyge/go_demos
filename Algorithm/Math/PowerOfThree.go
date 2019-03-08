@@ -18,19 +18,22 @@ Example 4:
 
 Follow up:
 	Could you do it without using any loop / recursion?
- */
-
+*/
+//func isPowerOfThree(n int) bool {
+//	if n < 1 {
+//		return false
+//	} else if n == 1 {
+//		return true
+//	}
+//	for n != 1 {
+//		if n%3 != 0 {
+//			return false
+//		}
+//		n /= 3
+//	}
+//	return true
+//}
+// do it without using any loop / recursion
 func isPowerOfThree(n int) bool {
-	if n < 1 {
-		return false
-	} else if n == 1 {
-		return true
-	}
-	for n != 1 {
-		if n%3 != 0 {
-			return false
-		}
-		n /= 3
-	}
-	return true
+	return n > 0 && 1162261467%n == 0  // 1162261467 = 2^31 - 1
 }
