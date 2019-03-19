@@ -43,6 +43,8 @@ func multiply(num1 string, num2 string) string {
 		}
 		res.WriteByte(pos[i] + '0')
 	}
-
+	if res.Len() == 0 {
+		return "0"
+	}
 	return res.String()
 }
